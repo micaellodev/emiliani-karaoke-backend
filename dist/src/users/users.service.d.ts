@@ -4,6 +4,6 @@ export declare class UsersService {
     private prisma;
     constructor(prisma: PrismaService);
     createWorker(username: string, password: string): Promise<User>;
-    findAllWorkers(): Promise<User[]>;
+    findAllWorkers(): Promise<Omit<User, 'password'>[]>;
     deleteUser(id: string): Promise<User>;
 }

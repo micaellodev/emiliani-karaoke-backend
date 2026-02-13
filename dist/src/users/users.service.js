@@ -72,7 +72,6 @@ let UsersService = class UsersService {
                 role: true,
                 createdAt: true,
                 updatedAt: true,
-                password: false,
             },
         });
     }
