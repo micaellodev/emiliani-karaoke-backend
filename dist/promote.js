@@ -34,10 +34,8 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 const client_1 = require("@prisma/client");
-const prisma_adapter_bun_sqlite_1 = require("prisma-adapter-bun-sqlite");
 const bcrypt = __importStar(require("bcryptjs"));
-const adapter = new prisma_adapter_bun_sqlite_1.PrismaBunSqlite({ url: 'file:./dev.db' });
-const prisma = new client_1.PrismaClient({ adapter });
+const prisma = new client_1.PrismaClient();
 async function main() {
     try {
         console.log('Searching for user "admin"...');

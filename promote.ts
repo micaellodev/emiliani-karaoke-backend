@@ -1,9 +1,7 @@
 import { PrismaClient } from '@prisma/client';
-import { PrismaBunSqlite } from 'prisma-adapter-bun-sqlite';
 import * as bcrypt from 'bcryptjs';
 
-const adapter = new PrismaBunSqlite({ url: 'file:./dev.db' });
-const prisma = new PrismaClient({ adapter });
+const prisma = new PrismaClient();
 
 async function main() {
     try {
