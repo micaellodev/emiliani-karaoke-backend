@@ -9,8 +9,9 @@
         "build": "tsc",
         "seed": "bun run prisma/seed.ts",
         "db:push": "bun x prisma db push",
-        "db:generate": "bun x prisma generate",
-        "db:seed": "bun run prisma/seed.ts"
+        "db:generate": "prisma generate",
+        "db:seed": "bun run prisma/seed.ts",
+        "postinstall": "prisma generate"
     },
     "dependencies": {
         "@libsql/client": "^0.17.0",
