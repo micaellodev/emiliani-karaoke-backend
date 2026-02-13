@@ -21,7 +21,6 @@
         "passport": "^0.7.0",
         "passport-jwt": "^4.0.1",
         "pg": "^8.18.0",
-        "prisma-adapter-bun-sqlite": "^0.6.7",
         "reflect-metadata": "^0.2.0",
         "rxjs": "^7.8.1",
         "socket.io": "^4.7.0",
@@ -519,8 +518,6 @@
     "postgres-interval": ["postgres-interval@1.2.0", "", { "dependencies": { "xtend": "^4.0.0" } }, "sha512-9ZhXKM/rw350N1ovuWHbGxnGh/SNJ4cnxHiM0rxE4VN41wsg8P8zWn9hv/buK00RP4WvlOyr/RBDiptyxVbkZQ=="],
 
     "prisma": ["prisma@7.3.0", "", { "dependencies": { "@prisma/config": "7.3.0", "@prisma/dev": "0.20.0", "@prisma/engines": "7.3.0", "@prisma/studio-core": "0.13.1", "mysql2": "3.15.3", "postgres": "3.4.7" }, "peerDependencies": { "better-sqlite3": ">=9.0.0", "typescript": ">=5.4.0" }, "optionalPeers": ["better-sqlite3", "typescript"], "bin": { "prisma": "build/index.js" } }, "sha512-ApYSOLHfMN8WftJA+vL6XwAPOh/aZ0BgUyyKPwUFgjARmG6EBI9LzDPf6SWULQMSAxydV9qn5gLj037nPNlg2w=="],
-
-    "prisma-adapter-bun-sqlite": ["prisma-adapter-bun-sqlite@0.6.7", "", { "dependencies": { "@prisma/driver-adapter-utils": "^7.3.0" }, "peerDependencies": { "@prisma/client": "^7.0.0" } }, "sha512-BzOWs2BbZCK6vi8eMyPh1uSySuJsCj1dWZqw8KXxRSNChk2+Ka1Kqz+N+kzV/Fepj48JnFG+UxNkP0WTxJnahg=="],
 
     "promise-limit": ["promise-limit@2.7.0", "", {}, "sha512-7nJ6v5lnJsXwGprnGXga4wx6d1POjvi5Qmf1ivTRxTjH4Z/9Czja/UCMLVmB9N93GeWOU93XaFaEt6jbuoagNw=="],
 
