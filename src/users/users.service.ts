@@ -18,7 +18,7 @@ export class UsersService {
         });
     }
 
-    async findAllWorkers(): Promise<User[]> {
+    async findAllWorkers(): Promise<Omit<User, 'password'>[]> {
         return this.prisma.user.findMany({
             where: {
                 role: UserRole.WORKER,
@@ -29,8 +29,7 @@ export class UsersService {
                 role: true,
                 createdAt: true,
                 updatedAt: true,
-                password: false, // Exclude password
-            } as any,
+            },
         });
     }
 
