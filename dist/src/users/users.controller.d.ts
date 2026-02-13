@@ -7,26 +7,26 @@ export declare class UsersController {
         password: string;
     }): Promise<{
         id: string;
-        createdAt: Date;
         username: string;
         password: string;
         role: import(".prisma/client").$Enums.UserRole;
+        createdAt: Date;
         updatedAt: Date;
     }>;
     findAll(): Promise<Omit<{
         id: string;
-        createdAt: Date;
         username: string;
         password: string;
         role: import(".prisma/client").$Enums.UserRole;
+        createdAt: Date;
         updatedAt: Date;
     }, "password">[]>;
     remove(id: string): Promise<{
         id: string;
-        createdAt: Date;
         username: string;
         password: string;
         role: import(".prisma/client").$Enums.UserRole;
+        createdAt: Date;
         updatedAt: Date;
     }>;
 }
