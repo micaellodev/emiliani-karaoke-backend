@@ -37,7 +37,7 @@ bun run start:dev    # Desarrollo (hot reload)
 bun run start        # Producción
 ```
 
-Servidor corriendo en: **http://localhost:3001**
+Servidor corriendo en: **https://l4valink-production.up.railway.app**
 
 ---
 

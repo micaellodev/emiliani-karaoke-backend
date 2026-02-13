@@ -67,7 +67,7 @@ __decorate([
 exports.EventsGateway = EventsGateway = __decorate([
     (0, websockets_1.WebSocketGateway)({
         cors: {
-            origin: ['http://localhost:3000', 'http://localhost:3001'],
+            origin: ['http://localhost:3000', 'https://l4valink-production.up.railway.app'],
             credentials: true,
         },
     })

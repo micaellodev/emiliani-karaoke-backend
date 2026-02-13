@@ -88,7 +88,7 @@ bun run start:dev
 
 En otra terminal:
 ```bash
-curl -X POST http://localhost:3001/auth/login \
+curl -X POST https://l4valink-production.up.railway.app/auth/login \
   -H "Content-Type: application/json" \
   -d '{"username":"admin","password":"admin123"}'
 ```
@@ -104,4 +104,4 @@ cd server
 bun run start:dev
 ```
 
-El backend estará listo en `http://localhost:3001` 🚀
+El backend estará listo en `https://l4valink-production.up.railway.app` 🚀

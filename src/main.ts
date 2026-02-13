@@ -7,7 +7,7 @@ async function bootstrap() {
     // Enable CORS for frontend
     // Enable CORS for frontendd
     app.enableCors({
-        origin: process.env.FRONTEND_URL || ['http://localhost:3000', 'http://localhost:3001'],
+        origin: process.env.FRONTEND_URL || ['http://localhost:3000', 'https://l4valink-production.up.railway.app'],
         methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
         credentials: true,
     });
