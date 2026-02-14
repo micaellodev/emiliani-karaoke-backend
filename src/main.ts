@@ -7,7 +7,7 @@ async function bootstrap() {
     // Enable CORS for frontend
     // Enable CORS for frontendd
     app.enableCors({
-        origin: process.env.FRONTEND_URL || ['https://emilianipizzas.com', 'http://localhost:3000', 'https://l4valink-production.up.railway.app'],
+        origin: true,
         methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
         credentials: true,
     });
