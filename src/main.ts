@@ -7,7 +7,7 @@ async function bootstrap() {
     // Enable CORS for frontend
     // Enable CORS for frontendd
     app.enableCors({
-        origin: true,
+        origin: ['https://emilianipizzas.com/', 'http://localhost:3000', 'https://bira-backend-production.up.railway.app'],
         methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
         credentials: true,
     });
