@@ -24,6 +24,24 @@ export declare class QueueController {
         order: number;
         playedAt: Date | null;
     }>;
+    addSongDirectly(body: {
+        youtubeId: string;
+        title: string;
+        channelTitle: string;
+        duration: string;
+    }, req: any): Promise<{
+        id: string;
+        createdAt: Date;
+        youtubeId: string;
+        title: string;
+        channelTitle: string;
+        duration: string;
+        requestedByTable: number;
+        requestedBy: string | null;
+        status: import(".prisma/client").$Enums.QueueStatus;
+        order: number;
+        playedAt: Date | null;
+    }>;
     approveSong(id: string): Promise<{
         id: string;
         createdAt: Date;
@@ -158,6 +176,14 @@ export declare class QueueController {
         createdAt: Date;
         tableNumber: number;
         userName: string;
+    }>;
+    getTableSession(id: string): Promise<{
+        id: number;
+        createdAt: Date;
+        tableNumber: number;
+        userName: string;
+    } | {
+        userName: any;
     }>;
     getTables(): Promise<{
         id: number;

@@ -1,11 +1,9 @@
 export declare class YouTubeService {
-    private youtube;
-    search(query: string): Promise<{
+    search(query: string, isUnrestricted?: boolean): Promise<{
         id: string;
         title: string;
         channelTitle: string;
         duration: string;
         thumbnail: string;
     }[]>;
-    private formatDuration;
 }

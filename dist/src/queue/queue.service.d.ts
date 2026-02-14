@@ -24,6 +24,25 @@ export declare class QueueService {
         order: number;
         playedAt: Date | null;
     }>;
+    addDirect(data: {
+        youtubeId: string;
+        title: string;
+        channelTitle: string;
+        duration: string;
+        addedBy: string;
+    }): Promise<{
+        id: string;
+        createdAt: Date;
+        youtubeId: string;
+        title: string;
+        channelTitle: string;
+        duration: string;
+        requestedByTable: number;
+        requestedBy: string | null;
+        status: import(".prisma/client").$Enums.QueueStatus;
+        order: number;
+        playedAt: Date | null;
+    }>;
     approveSong(id: string): Promise<{
         id: string;
         createdAt: Date;
@@ -138,6 +157,12 @@ export declare class QueueService {
         }[];
     }>;
     joinTable(tableNumber: number, userName: string): Promise<{
+        id: number;
+        createdAt: Date;
+        tableNumber: number;
+        userName: string;
+    }>;
+    getTableSession(tableNumber: number): Promise<{
         id: number;
         createdAt: Date;
         tableNumber: number;

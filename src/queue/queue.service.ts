@@ -28,6 +28,36 @@ export class QueueService {
         });
     }
 
+    async addDirect(data: {
+        youtubeId: string;
+        title: string;
+        channelTitle: string;
+        duration: string;
+        addedBy: string;
+    }) {
+        // Get max order in APPROVED
+        const maxOrder = await this.prisma.queueItem.findFirst({
+            where: { status: 'APPROVED' },
+            orderBy: { order: 'desc' },
+            select: { order: true },
+        });
+
+        const nextOrder = (maxOrder?.order ?? 0) + 1;
+
+        return this.prisma.queueItem.create({
+            data: {
+                youtubeId: data.youtubeId,
+                title: data.title,
+                channelTitle: data.channelTitle,
+                duration: data.duration,
+                requestedByTable: 0, // Admin/System
+                requestedBy: data.addedBy,
+                status: 'APPROVED',
+                order: nextOrder,
+            },
+        });
+    }
+
     async approveSong(id: string) {
         // Get the highest order number in approved queue
         const maxOrder = await this.prisma.queueItem.findFirst({
@@ -181,18 +211,18 @@ export class QueueService {
 
     async joinTable(tableNumber: number, userName: string) {
         console.log(`[DEBUG] joinTable called with table=${tableNumber}, user=${userName}`);
-        // Remove existing session for this table if any (or update it? logic says one user per table)
-        // ...
 
-        // Actually, we want to update if exists or create.
-        // But for simplifies, let's just upsert or delete old.
-        // My implementation:
-        // Delete old session for this table
-        await this.prisma.tableSession.deleteMany({
+        // Check if session already exists
+        const existingSession = await this.prisma.tableSession.findUnique({
             where: { tableNumber },
         });
 
-        console.log(`[DEBUG] Creating session...`);
+        if (existingSession) {
+            console.log(`[DEBUG] Session already exists for table ${tableNumber}:`, existingSession);
+            return existingSession;
+        }
+
+        console.log(`[DEBUG] Creating new session...`);
         const session = await this.prisma.tableSession.create({
             data: {
                 tableNumber,
@@ -203,6 +233,12 @@ export class QueueService {
 
         this.eventsGateway.emitTablesUpdate();
         return session;
+    }
+
+    async getTableSession(tableNumber: number) {
+        return this.prisma.tableSession.findUnique({
+            where: { tableNumber },
+        });
     }
 
     async getActiveTables() {

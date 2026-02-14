@@ -1,6 +1,7 @@
-import { Controller, Get, Post, Patch, Delete, Body, Param } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Body, Param, UseGuards, Request } from '@nestjs/common';
 import { QueueService } from './queue.service';
 import { EventsGateway } from '../gateway/events.gateway';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @Controller('queue')
 export class QueueController {
@@ -27,6 +28,22 @@ export class QueueController {
             console.error('Error requesting song:', error);
             throw error;
         }
+    }
+
+    @Post('add')
+    @UseGuards(JwtAuthGuard)
+    async addSongDirectly(@Body() body: {
+        youtubeId: string;
+        title: string;
+        channelTitle: string;
+        duration: string;
+    }, @Request() req) {
+        const song = await this.queueService.addDirect({
+            ...body,
+            addedBy: req.user.username || 'Admin'
+        });
+        this.eventsGateway.emitQueueUpdated();
+        return song;
     }
 
     @Patch('approve/:id')
@@ -113,6 +130,13 @@ export class QueueController {
         const session = await this.queueService.joinTable(body.tableNumber, body.userName);
         this.eventsGateway.emitTablesUpdate(); // Notify admins
         return session;
+    }
+
+    @Get('table/:id/session')
+    async getTableSession(@Param('id') id: string) {
+        const tableNumber = parseInt(id);
+        const session = await this.queueService.getTableSession(tableNumber);
+        return session || { userName: null }; // Return null object if no session
     }
 
     @Get('tables')

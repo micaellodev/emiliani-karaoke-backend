@@ -32,13 +32,13 @@
         "@nestjs/websockets": "^10.0.0",
         "@prisma/client": "5",
         "bcryptjs": "^2.4.3",
-        "googleapis": "^128.0.0",
         "passport": "^0.7.0",
         "passport-jwt": "^4.0.1",
         "pg": "^8.18.0",
         "reflect-metadata": "^0.2.0",
         "rxjs": "^7.8.1",
-        "socket.io": "^4.7.0"
+        "socket.io": "^4.7.0",
+        "youtube-sr": "^4.3.12"
     },
     "devDependencies": {
         "@nestjs/cli": "^10.0.0",

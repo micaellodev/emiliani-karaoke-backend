@@ -16,6 +16,7 @@ exports.QueueController = void 0;
 const common_1 = require("@nestjs/common");
 const queue_service_1 = require("./queue.service");
 const events_gateway_1 = require("../gateway/events.gateway");
+const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
 let QueueController = class QueueController {
     constructor(queueService, eventsGateway) {
         this.queueService = queueService;
@@ -32,6 +33,14 @@ let QueueController = class QueueController {
             console.error('Error requesting song:', error);
             throw error;
         }
+    }
+    async addSongDirectly(body, req) {
+        const song = await this.queueService.addDirect({
+            ...body,
+            addedBy: req.user.username || 'Admin'
+        });
+        this.eventsGateway.emitQueueUpdated();
+        return song;
     }
     async approveSong(id) {
         const song = await this.queueService.approveSong(id);
@@ -91,6 +100,11 @@ let QueueController = class QueueController {
         this.eventsGateway.emitTablesUpdate();
         return session;
     }
+    async getTableSession(id) {
+        const tableNumber = parseInt(id);
+        const session = await this.queueService.getTableSession(tableNumber);
+        return session || { userName: null };
+    }
     async getTables() {
         return this.queueService.getActiveTables();
     }
@@ -103,6 +117,15 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], QueueController.prototype, "requestSong", null);
+__decorate([
+    (0, common_1.Post)('add'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], QueueController.prototype, "addSongDirectly", null);
 __decorate([
     (0, common_1.Patch)('approve/:id'),
     __param(0, (0, common_1.Param)('id')),
@@ -189,6 +212,13 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], QueueController.prototype, "joinTable", null);
+__decorate([
+    (0, common_1.Get)('table/:id/session'),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], QueueController.prototype, "getTableSession", null);
 __decorate([
     (0, common_1.Get)('tables'),
     __metadata("design:type", Function),

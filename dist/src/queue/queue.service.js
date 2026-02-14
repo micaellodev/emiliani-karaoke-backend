@@ -27,6 +27,26 @@ let QueueService = class QueueService {
             },
         });
     }
+    async addDirect(data) {
+        const maxOrder = await this.prisma.queueItem.findFirst({
+            where: { status: 'APPROVED' },
+            orderBy: { order: 'desc' },
+            select: { order: true },
+        });
+        const nextOrder = (maxOrder?.order ?? 0) + 1;
+        return this.prisma.queueItem.create({
+            data: {
+                youtubeId: data.youtubeId,
+                title: data.title,
+                channelTitle: data.channelTitle,
+                duration: data.duration,
+                requestedByTable: 0,
+                requestedBy: data.addedBy,
+                status: 'APPROVED',
+                order: nextOrder,
+            },
+        });
+    }
     async approveSong(id) {
         const maxOrder = await this.prisma.queueItem.findFirst({
             where: { status: 'APPROVED' },
@@ -147,10 +167,14 @@ let QueueService = class QueueService {
     }
     async joinTable(tableNumber, userName) {
         console.log(`[DEBUG] joinTable called with table=${tableNumber}, user=${userName}`);
-        await this.prisma.tableSession.deleteMany({
+        const existingSession = await this.prisma.tableSession.findUnique({
             where: { tableNumber },
         });
-        console.log(`[DEBUG] Creating session...`);
+        if (existingSession) {
+            console.log(`[DEBUG] Session already exists for table ${tableNumber}:`, existingSession);
+            return existingSession;
+        }
+        console.log(`[DEBUG] Creating new session...`);
         const session = await this.prisma.tableSession.create({
             data: {
                 tableNumber,
@@ -160,6 +184,11 @@ let QueueService = class QueueService {
         console.log(`[DEBUG] Session created:`, session);
         this.eventsGateway.emitTablesUpdate();
         return session;
+    }
+    async getTableSession(tableNumber) {
+        return this.prisma.tableSession.findUnique({
+            where: { tableNumber },
+        });
     }
     async getActiveTables() {
         return this.prisma.tableSession.findMany();

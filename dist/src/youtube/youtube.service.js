@@ -5,63 +5,44 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.YouTubeService = void 0;
 const common_1 = require("@nestjs/common");
-const googleapis_1 = require("googleapis");
+const youtube_sr_1 = __importDefault(require("youtube-sr"));
 let YouTubeService = class YouTubeService {
-    constructor() {
-        this.youtube = googleapis_1.google.youtube({
-            version: 'v3',
-            auth: process.env.YOUTUBE_API_KEY,
-        });
-    }
-    async search(query) {
+    async search(query, isUnrestricted = false) {
         try {
-            const searchQuery = query.toLowerCase().includes('karaoke') ? query : `${query} karaoke`;
-            const searchResponse = await this.youtube.search.list({
-                part: ['snippet'],
-                q: searchQuery,
-                type: ['video'],
-                videoEmbeddable: 'true',
-                videoCategoryId: '10',
-                maxResults: 10,
+            const searchQuery = isUnrestricted ? query : (query.toLowerCase().includes('karaoke') ? query : `${query} karaoke`);
+            const videos = await youtube_sr_1.default.search(searchQuery, {
+                limit: 20,
+                type: 'video',
+                safeSearch: !isUnrestricted
             });
-            const videoIds = searchResponse.data.items
-                ?.map((item) => item.id?.videoId)
-                .filter(Boolean)
-                .join(',');
-            if (!videoIds) {
-                return [];
-            }
-            const detailsResponse = await this.youtube.videos.list({
-                part: ['contentDetails', 'snippet'],
-                id: [videoIds],
+            const filteredVideos = isUnrestricted ? videos : videos.filter(video => {
+                const title = video.title?.toLowerCase() || '';
+                return title.includes('karaoke') ||
+                    title.includes('instrumental') ||
+                    title.includes('pista') ||
+                    title.includes('letra') ||
+                    title.includes('lyrics') ||
+                    title.includes('off vocal') ||
+                    title.includes('backing track');
             });
-            return detailsResponse.data.items?.map((item) => ({
-                id: item.id,
-                title: item.snippet?.title,
-                channelTitle: item.snippet?.channelTitle,
-                duration: this.formatDuration(item.contentDetails?.duration || ''),
-                thumbnail: item.snippet?.thumbnails?.medium?.url,
-            })) || [];
+            return filteredVideos.slice(0, 10).map(video => ({
+                id: video.id,
+                title: video.title,
+                channelTitle: video.channel ? video.channel.name : '',
+                duration: video.durationFormatted,
+                thumbnail: video.thumbnail ? video.thumbnail.url : '',
+            }));
         }
         catch (error) {
             console.error('YouTube API error:', error);
             throw new Error('Failed to search YouTube');
         }
-    }
-    formatDuration(isoDuration) {
-        const match = isoDuration.match(/PT(\d+H)?(\d+M)?(\d+S)?/);
-        if (!match)
-            return '0:00';
-        const hours = (match[1] || '').replace('H', '');
-        const minutes = (match[2] || '').replace('M', '');
-        const seconds = (match[3] || '0').replace('S', '');
-        if (hours) {
-            return `${hours}:${minutes.padStart(2, '0')}:${seconds.padStart(2, '0')}`;
-        }
-        return `${minutes || '0'}:${seconds.padStart(2, '0')}`;
     }
 };
 exports.YouTubeService = YouTubeService;

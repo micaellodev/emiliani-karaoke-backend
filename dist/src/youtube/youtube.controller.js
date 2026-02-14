@@ -15,20 +15,25 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.YouTubeController = void 0;
 const common_1 = require("@nestjs/common");
 const youtube_service_1 = require("./youtube.service");
+const optional_jwt_auth_guard_1 = require("../auth/optional-jwt-auth.guard");
 let YouTubeController = class YouTubeController {
     constructor(youtubeService) {
         this.youtubeService = youtubeService;
     }
-    async search(query) {
-        return this.youtubeService.search(query);
+    async search(query, req) {
+        const user = req.user;
+        const isUnrestricted = user && (user.role === 'WORKER' || user.role === 'OWNER');
+        return this.youtubeService.search(query, isUnrestricted);
     }
 };
 exports.YouTubeController = YouTubeController;
 __decorate([
     (0, common_1.Get)('search'),
+    (0, common_1.UseGuards)(optional_jwt_auth_guard_1.OptionalJwtAuthGuard),
     __param(0, (0, common_1.Query)('q')),
+    __param(1, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", Promise)
 ], YouTubeController.prototype, "search", null);
 exports.YouTubeController = YouTubeController = __decorate([
