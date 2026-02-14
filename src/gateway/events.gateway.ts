@@ -9,7 +9,13 @@ import { Server, Socket } from 'socket.io';
 
 @WebSocketGateway({
     cors: {
-        origin: ['http://localhost:3000', 'https://l4valink-production.up.railway.app'],
+        origin: [
+            'http://localhost:3000',
+            'https://l4valink-production.up.railway.app',
+            'https://emilianipizzas.com',
+            'https://www.emilianipizzas.com',
+            'http://emilianipizzas.com',
+        ],
         credentials: true,
     },
 })
