@@ -68,3 +68,13 @@ model Settings {
 
   @@map("settings")
 }
+
+model Order {
+  id          String   @id @default(cuid())
+  tableNumber Int      @map("table_number")
+  items       Json     // Array of { name: string, quantity: number }
+  status      String   @default("PENDING") // PENDING, COMPLETED
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@map("orders")
+}

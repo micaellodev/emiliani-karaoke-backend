@@ -14,6 +14,7 @@ export declare class QueueService {
     }): Promise<{
         id: string;
         createdAt: Date;
+        order: number;
         youtubeId: string;
         title: string;
         channelTitle: string;
@@ -21,7 +22,6 @@ export declare class QueueService {
         requestedByTable: number;
         requestedBy: string | null;
         status: import(".prisma/client").$Enums.QueueStatus;
-        order: number;
         playedAt: Date | null;
     }>;
     addDirect(data: {
@@ -33,6 +33,7 @@ export declare class QueueService {
     }): Promise<{
         id: string;
         createdAt: Date;
+        order: number;
         youtubeId: string;
         title: string;
         channelTitle: string;
@@ -40,12 +41,12 @@ export declare class QueueService {
         requestedByTable: number;
         requestedBy: string | null;
         status: import(".prisma/client").$Enums.QueueStatus;
-        order: number;
         playedAt: Date | null;
     }>;
     approveSong(id: string): Promise<{
         id: string;
         createdAt: Date;
+        order: number;
         youtubeId: string;
         title: string;
         channelTitle: string;
@@ -53,12 +54,12 @@ export declare class QueueService {
         requestedByTable: number;
         requestedBy: string | null;
         status: import(".prisma/client").$Enums.QueueStatus;
-        order: number;
         playedAt: Date | null;
     }>;
     rejectSong(id: string): Promise<{
         id: string;
         createdAt: Date;
+        order: number;
         youtubeId: string;
         title: string;
         channelTitle: string;
@@ -66,12 +67,12 @@ export declare class QueueService {
         requestedByTable: number;
         requestedBy: string | null;
         status: import(".prisma/client").$Enums.QueueStatus;
-        order: number;
         playedAt: Date | null;
     }>;
     deleteSong(id: string): Promise<{
         id: string;
         createdAt: Date;
+        order: number;
         youtubeId: string;
         title: string;
         channelTitle: string;
@@ -79,13 +80,13 @@ export declare class QueueService {
         requestedByTable: number;
         requestedBy: string | null;
         status: import(".prisma/client").$Enums.QueueStatus;
-        order: number;
         playedAt: Date | null;
     }>;
     getQueue(): Promise<{
         thumbnail: string;
         id: string;
         createdAt: Date;
+        order: number;
         youtubeId: string;
         title: string;
         channelTitle: string;
@@ -93,12 +94,12 @@ export declare class QueueService {
         requestedByTable: number;
         requestedBy: string | null;
         status: import(".prisma/client").$Enums.QueueStatus;
-        order: number;
         playedAt: Date | null;
     }[]>;
     recover(): Promise<{
         id: string;
         createdAt: Date;
+        order: number;
         youtubeId: string;
         title: string;
         channelTitle: string;
@@ -106,12 +107,12 @@ export declare class QueueService {
         requestedByTable: number;
         requestedBy: string | null;
         status: import(".prisma/client").$Enums.QueueStatus;
-        order: number;
         playedAt: Date | null;
     }>;
     playSong(id: string): Promise<{
         id: string;
         createdAt: Date;
+        order: number;
         youtubeId: string;
         title: string;
         channelTitle: string;
@@ -119,13 +120,13 @@ export declare class QueueService {
         requestedByTable: number;
         requestedBy: string | null;
         status: import(".prisma/client").$Enums.QueueStatus;
-        order: number;
         playedAt: Date | null;
     }>;
     completeSong(id: string): Promise<{
         nextSong: {
             id: string;
             createdAt: Date;
+            order: number;
             youtubeId: string;
             title: string;
             channelTitle: string;
@@ -133,7 +134,6 @@ export declare class QueueService {
             requestedByTable: number;
             requestedBy: string | null;
             status: import(".prisma/client").$Enums.QueueStatus;
-            order: number;
             playedAt: Date | null;
         };
     }>;

@@ -14,12 +14,13 @@ const youtube_module_1 = require("./youtube/youtube.module");
 const events_gateway_1 = require("./gateway/events.gateway");
 const prisma_service_1 = require("./prisma.service");
 const users_module_1 = require("./users/users.module");
+const orders_module_1 = require("./orders/orders.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
-        imports: [auth_module_1.AuthModule, queue_module_1.QueueModule, youtube_module_1.YouTubeModule, users_module_1.UsersModule],
+        imports: [auth_module_1.AuthModule, queue_module_1.QueueModule, youtube_module_1.YouTubeModule, users_module_1.UsersModule, orders_module_1.OrdersModule],
         providers: [events_gateway_1.EventsGateway, prisma_service_1.PrismaService],
     })
 ], AppModule);
