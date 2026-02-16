@@ -1,5 +1,6 @@
 import { Controller, Get, Post, Patch, Delete, Body, Param, UseGuards, Request } from '@nestjs/common';
 import { QueueService } from './queue.service';
+import { OrdersService } from '../orders/orders.service';
 import { EventsGateway } from '../gateway/events.gateway';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
@@ -8,6 +9,7 @@ export class QueueController {
     constructor(
         private queueService: QueueService,
         private eventsGateway: EventsGateway,
+        private ordersService: OrdersService,
     ) { }
 
     @Post('request')
@@ -84,6 +86,7 @@ export class QueueController {
     async resetTable(@Param('id') id: string) {
         const tableNumber = parseInt(id);
         await this.queueService.resetTable(tableNumber);
+        await this.ordersService.closeTable(tableNumber);
         this.eventsGateway.emitResetTable(tableNumber);
         return { success: true };
     }

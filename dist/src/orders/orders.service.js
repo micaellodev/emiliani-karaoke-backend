@@ -17,6 +17,56 @@ let OrdersService = class OrdersService {
     constructor(prisma) {
         this.prisma = prisma;
     }
+    async getSalesLog(filter) {
+        const where = {
+            status: 'COMPLETED',
+        };
+        if (filter.startDate) {
+            where.createdAt = { ...where.createdAt, gte: filter.startDate };
+        }
+        if (filter.endDate) {
+            where.createdAt = { ...where.createdAt, lte: filter.endDate };
+        }
+        if (filter.tableNumber) {
+            where.tableNumber = filter.tableNumber;
+        }
+        if (filter.sellerName) {
+            where.userName = { contains: filter.sellerName, mode: 'insensitive' };
+        }
+        return this.prisma.order.findMany({
+            where,
+            orderBy: { createdAt: 'desc' },
+        });
+    }
+    async getTopBeverages(startDate, endDate) {
+        const where = {
+            status: 'COMPLETED',
+        };
+        if (startDate) {
+            where.createdAt = { ...where.createdAt, gte: startDate };
+        }
+        if (endDate) {
+            where.createdAt = { ...where.createdAt, lte: endDate };
+        }
+        const orders = await this.prisma.order.findMany({
+            where,
+            select: { items: true },
+        });
+        const itemCounts = new Map();
+        for (const order of orders) {
+            if (Array.isArray(order.items)) {
+                for (const item of order.items) {
+                    const name = item.name.trim();
+                    const quantity = item.quantity || 0;
+                    itemCounts.set(name, (itemCounts.get(name) || 0) + quantity);
+                }
+            }
+        }
+        return Array.from(itemCounts.entries())
+            .map(([name, count]) => ({ name, count }))
+            .sort((a, b) => b.count - a.count)
+            .slice(0, 5);
+    }
     async createOrder(data) {
         const totalPrice = (0, pricing_utils_1.calculateOrderPrice)(data.items);
         return this.prisma.order.create({
@@ -35,9 +85,26 @@ let OrdersService = class OrdersService {
             orderBy: { createdAt: 'desc' },
         });
     }
+    async closeTable(tableNumber) {
+        return this.prisma.order.updateMany({
+            where: {
+                tableNumber: tableNumber,
+                status: {
+                    in: ['PENDING', 'COMPLETED']
+                }
+            },
+            data: {
+                status: 'CLOSED'
+            }
+        });
+    }
     async getCompletedOrders() {
         return this.prisma.order.findMany({
-            where: { status: 'COMPLETED' },
+            where: {
+                status: {
+                    in: ['COMPLETED', 'CLOSED']
+                }
+            },
             orderBy: { createdAt: 'desc' },
         });
     }
@@ -56,7 +123,9 @@ let OrdersService = class OrdersService {
         const orders = await this.prisma.order.findMany({
             where: {
                 tableNumber: tableNumber,
-                status: 'PENDING'
+                status: {
+                    in: ['PENDING', 'COMPLETED']
+                }
             },
             orderBy: { createdAt: 'desc' },
         });

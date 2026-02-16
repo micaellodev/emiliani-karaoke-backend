@@ -15,12 +15,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.QueueController = void 0;
 const common_1 = require("@nestjs/common");
 const queue_service_1 = require("./queue.service");
+const orders_service_1 = require("../orders/orders.service");
 const events_gateway_1 = require("../gateway/events.gateway");
 const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
 let QueueController = class QueueController {
-    constructor(queueService, eventsGateway) {
+    constructor(queueService, eventsGateway, ordersService) {
         this.queueService = queueService;
         this.eventsGateway = eventsGateway;
+        this.ordersService = ordersService;
     }
     async requestSong(body) {
         try {
@@ -68,6 +70,7 @@ let QueueController = class QueueController {
     async resetTable(id) {
         const tableNumber = parseInt(id);
         await this.queueService.resetTable(tableNumber);
+        await this.ordersService.closeTable(tableNumber);
         this.eventsGateway.emitResetTable(tableNumber);
         return { success: true };
     }
@@ -250,6 +253,7 @@ __decorate([
 exports.QueueController = QueueController = __decorate([
     (0, common_1.Controller)('queue'),
     __metadata("design:paramtypes", [queue_service_1.QueueService,
-        events_gateway_1.EventsGateway])
+        events_gateway_1.EventsGateway,
+        orders_service_1.OrdersService])
 ], QueueController);
 //# sourceMappingURL=queue.controller.js.map

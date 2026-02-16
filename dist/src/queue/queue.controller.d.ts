@@ -1,9 +1,11 @@
 import { QueueService } from './queue.service';
+import { OrdersService } from '../orders/orders.service';
 import { EventsGateway } from '../gateway/events.gateway';
 export declare class QueueController {
     private queueService;
     private eventsGateway;
-    constructor(queueService: QueueService, eventsGateway: EventsGateway);
+    private ordersService;
+    constructor(queueService: QueueService, eventsGateway: EventsGateway, ordersService: OrdersService);
     requestSong(body: {
         youtubeId: string;
         title: string;

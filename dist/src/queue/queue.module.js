@@ -12,11 +12,13 @@ const queue_service_1 = require("./queue.service");
 const queue_controller_1 = require("./queue.controller");
 const prisma_service_1 = require("../prisma.service");
 const events_gateway_1 = require("../gateway/events.gateway");
+const orders_module_1 = require("../orders/orders.module");
 let QueueModule = class QueueModule {
 };
 exports.QueueModule = QueueModule;
 exports.QueueModule = QueueModule = __decorate([
     (0, common_1.Module)({
+        imports: [orders_module_1.OrdersModule],
         controllers: [queue_controller_1.QueueController],
         providers: [queue_service_1.QueueService, prisma_service_1.PrismaService, events_gateway_1.EventsGateway],
         exports: [queue_service_1.QueueService],

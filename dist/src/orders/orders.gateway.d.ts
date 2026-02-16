@@ -10,33 +10,33 @@ export declare class OrdersGateway {
         items: any[];
     }, client: Socket): Promise<{
         id: string;
-        createdAt: Date;
-        status: string;
         tableNumber: number;
         userName: string | null;
         items: import("@prisma/client/runtime/library").JsonValue;
         totalPrice: number;
+        status: string;
+        createdAt: Date;
     }>;
     handleGetOrders(): Promise<{
         id: string;
-        createdAt: Date;
-        status: string;
         tableNumber: number;
         userName: string | null;
         items: import("@prisma/client/runtime/library").JsonValue;
         totalPrice: number;
+        status: string;
+        createdAt: Date;
     }[]>;
     handleCompleteOrder(data: {
         id: string;
     }): Promise<void>;
     handleGetCompletedOrders(): Promise<{
         id: string;
-        createdAt: Date;
-        status: string;
         tableNumber: number;
         userName: string | null;
         items: import("@prisma/client/runtime/library").JsonValue;
         totalPrice: number;
+        status: string;
+        createdAt: Date;
     }[]>;
     handleDeleteOrder(data: {
         id: string;
@@ -47,12 +47,12 @@ export declare class OrdersGateway {
         tableNumber: number;
         orders: {
             id: string;
-            createdAt: Date;
-            status: string;
             tableNumber: number;
             userName: string | null;
             items: import("@prisma/client/runtime/library").JsonValue;
             totalPrice: number;
+            status: string;
+            createdAt: Date;
         }[];
         aggregatedItems: {
             name: string;
