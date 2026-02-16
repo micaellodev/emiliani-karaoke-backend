@@ -17,7 +17,7 @@ export class OrdersGateway {
 
     @SubscribeMessage('order:create')
     async handleCreateOrder(
-        @MessageBody() data: { tableNumber: number; items: any[] },
+        @MessageBody() data: { tableNumber: number; userName?: string; items: any[] },
         @ConnectedSocket() client: Socket,
     ) {
         const order = await this.ordersService.createOrder(data);
@@ -34,5 +34,21 @@ export class OrdersGateway {
     async handleCompleteOrder(@MessageBody() data: { id: string }) {
         await this.ordersService.completeOrder(data.id);
         this.server.emit('order:completed', { id: data.id });
+    }
+
+    @SubscribeMessage('order:getCompleted')
+    async handleGetCompletedOrders() {
+        return this.ordersService.getCompletedOrders();
+    }
+
+    @SubscribeMessage('order:delete')
+    async handleDeleteOrder(@MessageBody() data: { id: string }) {
+        await this.ordersService.deleteOrder(data.id);
+        this.server.emit('order:deleted', { id: data.id });
+    }
+
+    @SubscribeMessage('order:getByTable')
+    async handleGetOrdersByTable(@MessageBody() data: { tableNumber: number }) {
+        return this.ordersService.getOrdersByTable(data.tableNumber);
     }
 }

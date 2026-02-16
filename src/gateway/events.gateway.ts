@@ -70,4 +70,8 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     emitTablesUpdate() {
         this.server.emit('tables_updated');
     }
+
+    emitTimerUpdate(enabled: boolean) {
+        this.server.emit('timer_updated', { enabled });
+    }
 }

@@ -17,6 +17,14 @@ let QueueService = class QueueService {
     constructor(prisma, eventsGateway) {
         this.prisma = prisma;
         this.eventsGateway = eventsGateway;
+        this.timerEnabled = true;
+    }
+    getTimerEnabled() {
+        return this.timerEnabled;
+    }
+    setTimerEnabled(enabled) {
+        this.timerEnabled = enabled;
+        return this.timerEnabled;
     }
     async requestSong(data) {
         return this.prisma.queueItem.create({

@@ -12,33 +12,76 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.OrdersService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../prisma.service");
+const pricing_utils_1 = require("./pricing.utils");
 let OrdersService = class OrdersService {
     constructor(prisma) {
         this.prisma = prisma;
     }
     async createOrder(data) {
+        const totalPrice = (0, pricing_utils_1.calculateOrderPrice)(data.items);
         return this.prisma.order.create({
             data: {
                 tableNumber: data.tableNumber,
+                userName: data.userName,
                 items: data.items,
+                totalPrice: totalPrice,
                 status: 'PENDING',
             },
         });
     }
     async getOrders() {
         return this.prisma.order.findMany({
+            where: { status: 'PENDING' },
+            orderBy: { createdAt: 'desc' },
+        });
+    }
+    async getCompletedOrders() {
+        return this.prisma.order.findMany({
+            where: { status: 'COMPLETED' },
             orderBy: { createdAt: 'desc' },
         });
     }
     async completeOrder(id) {
-        return this.prisma.order.delete({
+        return this.prisma.order.update({
             where: { id },
+            data: { status: 'COMPLETED' },
         });
     }
     async deleteOrder(id) {
         return this.prisma.order.delete({
             where: { id }
         });
+    }
+    async getOrdersByTable(tableNumber) {
+        const orders = await this.prisma.order.findMany({
+            where: {
+                tableNumber: tableNumber,
+                status: 'PENDING'
+            },
+            orderBy: { createdAt: 'desc' },
+        });
+        const itemsMap = new Map();
+        let totalPrice = 0;
+        for (const order of orders) {
+            totalPrice += order.totalPrice || 0;
+            if (Array.isArray(order.items)) {
+                for (const item of order.items) {
+                    const currentQty = itemsMap.get(item.name) || 0;
+                    itemsMap.set(item.name, currentQty + item.quantity);
+                }
+            }
+        }
+        const aggregatedItems = Array.from(itemsMap.entries()).map(([name, quantity]) => ({
+            name,
+            quantity
+        }));
+        return {
+            tableNumber,
+            orders,
+            aggregatedItems,
+            totalPrice,
+            orderCount: orders.length
+        };
     }
 };
 exports.OrdersService = OrdersService;

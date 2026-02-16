@@ -41,6 +41,7 @@ model QueueItem {
   duration        String
   requestedByTable Int        @map("requested_by_table")
   requestedBy      String?    @map("requested_by")
+  comments        String?     // Optional special requests from customers
   status          QueueStatus @default(PENDING)
   order           Int         @default(0)
   createdAt       DateTime    @default(now()) @map("created_at")
@@ -72,7 +73,9 @@ model Settings {
 model Order {
   id          String   @id @default(cuid())
   tableNumber Int      @map("table_number")
+  userName    String?  @map("user_name") // Name of the customer who placed the order
   items       Json     // Array of { name: string, quantity: number }
+  totalPrice  Float    @default(0) @map("total_price") // Total price in soles
   status      String   @default("PENDING") // PENDING, COMPLETED
   createdAt   DateTime @default(now()) @map("created_at")
 

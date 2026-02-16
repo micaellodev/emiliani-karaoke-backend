@@ -46,6 +46,9 @@ let EventsGateway = class EventsGateway {
     emitTablesUpdate() {
         this.server.emit('tables_updated');
     }
+    emitTimerUpdate(enabled) {
+        this.server.emit('timer_updated', { enabled });
+    }
 };
 exports.EventsGateway = EventsGateway;
 __decorate([

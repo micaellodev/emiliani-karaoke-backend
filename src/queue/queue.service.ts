@@ -6,10 +6,21 @@ import { EventsGateway } from '../gateway/events.gateway';
 
 @Injectable()
 export class QueueService {
+    private timerEnabled = true;
+
     constructor(
         private prisma: PrismaService,
         private eventsGateway: EventsGateway
     ) { }
+
+    getTimerEnabled() {
+        return this.timerEnabled;
+    }
+
+    setTimerEnabled(enabled: boolean) {
+        this.timerEnabled = enabled;
+        return this.timerEnabled;
+    }
 
     async requestSong(data: {
         youtubeId: string;
@@ -18,6 +29,7 @@ export class QueueService {
         duration: string;
         requestedByTable: number;
         requestedBy?: string;
+        comments?: string;
     }) {
         return this.prisma.queueItem.create({
             data: {

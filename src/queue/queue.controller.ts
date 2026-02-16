@@ -18,6 +18,7 @@ export class QueueController {
         duration: string;
         requestedByTable: number;
         requestedBy?: string;
+        comments?: string;
     }) {
         try {
             console.log('Received request body:', body);
@@ -113,6 +114,7 @@ export class QueueController {
     async completeSong(@Body() body: { currentId: string }) {
         const result = await this.queueService.completeSong(body.currentId);
         this.eventsGateway.emitPlayNext(result.nextSong);
+        this.eventsGateway.emitQueueUpdated();
         return result;
     }
 
@@ -142,5 +144,17 @@ export class QueueController {
     @Get('tables')
     async getTables() {
         return this.queueService.getActiveTables();
+    }
+
+    @Get('timer')
+    async getTimerEnabled() {
+        return { enabled: this.queueService.getTimerEnabled() };
+    }
+
+    @Post('timer')
+    async setTimerEnabled(@Body() body: { enabled: boolean }) {
+        const enabled = this.queueService.setTimerEnabled(body.enabled);
+        this.eventsGateway.emitTimerUpdate(enabled);
+        return { enabled };
     }
 }

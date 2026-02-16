@@ -32,6 +32,16 @@ let OrdersGateway = class OrdersGateway {
         await this.ordersService.completeOrder(data.id);
         this.server.emit('order:completed', { id: data.id });
     }
+    async handleGetCompletedOrders() {
+        return this.ordersService.getCompletedOrders();
+    }
+    async handleDeleteOrder(data) {
+        await this.ordersService.deleteOrder(data.id);
+        this.server.emit('order:deleted', { id: data.id });
+    }
+    async handleGetOrdersByTable(data) {
+        return this.ordersService.getOrdersByTable(data.tableNumber);
+    }
 };
 exports.OrdersGateway = OrdersGateway;
 __decorate([
@@ -59,6 +69,26 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], OrdersGateway.prototype, "handleCompleteOrder", null);
+__decorate([
+    (0, websockets_1.SubscribeMessage)('order:getCompleted'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], OrdersGateway.prototype, "handleGetCompletedOrders", null);
+__decorate([
+    (0, websockets_1.SubscribeMessage)('order:delete'),
+    __param(0, (0, websockets_1.MessageBody)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], OrdersGateway.prototype, "handleDeleteOrder", null);
+__decorate([
+    (0, websockets_1.SubscribeMessage)('order:getByTable'),
+    __param(0, (0, websockets_1.MessageBody)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], OrdersGateway.prototype, "handleGetOrdersByTable", null);
 exports.OrdersGateway = OrdersGateway = __decorate([
     (0, websockets_1.WebSocketGateway)({ cors: { origin: '*' } }),
     __metadata("design:paramtypes", [orders_service_1.OrdersService])

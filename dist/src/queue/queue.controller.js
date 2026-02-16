@@ -88,6 +88,7 @@ let QueueController = class QueueController {
     async completeSong(body) {
         const result = await this.queueService.completeSong(body.currentId);
         this.eventsGateway.emitPlayNext(result.nextSong);
+        this.eventsGateway.emitQueueUpdated();
         return result;
     }
     async reorderQueue(body) {
@@ -107,6 +108,14 @@ let QueueController = class QueueController {
     }
     async getTables() {
         return this.queueService.getActiveTables();
+    }
+    async getTimerEnabled() {
+        return { enabled: this.queueService.getTimerEnabled() };
+    }
+    async setTimerEnabled(body) {
+        const enabled = this.queueService.setTimerEnabled(body.enabled);
+        this.eventsGateway.emitTimerUpdate(enabled);
+        return { enabled };
     }
 };
 exports.QueueController = QueueController;
@@ -225,6 +234,19 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], QueueController.prototype, "getTables", null);
+__decorate([
+    (0, common_1.Get)('timer'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], QueueController.prototype, "getTimerEnabled", null);
+__decorate([
+    (0, common_1.Post)('timer'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], QueueController.prototype, "setTimerEnabled", null);
 exports.QueueController = QueueController = __decorate([
     (0, common_1.Controller)('queue'),
     __metadata("design:paramtypes", [queue_service_1.QueueService,

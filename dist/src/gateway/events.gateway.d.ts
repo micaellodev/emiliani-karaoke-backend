@@ -13,4 +13,5 @@ export declare class EventsGateway implements OnGatewayConnection, OnGatewayDisc
     handlePauseSong(client: Socket, data: any): void;
     emitResetTable(tableNumber: number): void;
     emitTablesUpdate(): void;
+    emitTimerUpdate(enabled: boolean): void;
 }
