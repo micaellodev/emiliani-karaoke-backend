@@ -95,7 +95,7 @@ export declare class QueueController {
     resumePlayback(): Promise<{
         success: boolean;
     }>;
-    resetTable(id: string): Promise<{
+    resetTable(id: string, req: any): Promise<{
         success: boolean;
     }>;
     getStats(): Promise<{
@@ -111,6 +111,16 @@ export declare class QueueController {
             count: number;
         }[];
     }>;
+    getTableLogs(): Promise<{
+        id: number;
+        tableNumber: number;
+        customerName: string;
+        openedAt: Date;
+        closedAt: Date | null;
+        openedBy: string;
+        closedBy: string | null;
+        totalTotal: number | null;
+    }[]>;
     getQueue(): Promise<{
         thumbnail: string;
         id: string;

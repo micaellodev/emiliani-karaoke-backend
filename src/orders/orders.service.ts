@@ -1,10 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { calculateOrderPrice } from './pricing.utils';
+import { PrinterService } from '../printer/printer.service';
 
 @Injectable()
 export class OrdersService {
-    constructor(private prisma: PrismaService) { }
+    constructor(
+        private prisma: PrismaService,
+        private printerService: PrinterService,
+    ) { }
 
     async getSalesLog(filter: { startDate?: Date; endDate?: Date; tableNumber?: number; sellerName?: string }) {
         const where: any = {
@@ -67,18 +71,29 @@ export class OrdersService {
             .slice(0, 5);
     }
 
-    async createOrder(data: { tableNumber: number; userName?: string; items: any[] }) {
+    async createOrder(data: { tableNumber: number; userName?: string; workerName?: string; items: any[] }) {
         const totalPrice = calculateOrderPrice(data.items);
 
-        return this.prisma.order.create({
+        const order = await this.prisma.order.create({
             data: {
                 tableNumber: data.tableNumber,
                 userName: data.userName,
+                workerName: data.workerName,
                 items: data.items,
                 totalPrice: totalPrice,
                 status: 'PENDING',
             } as any, // Temporary workaround for Prisma type generation issue
         });
+
+        // Print the order ticket
+        this.printerService.printOrder({
+            tableNumber: data.tableNumber,
+            userName: data.userName,
+            workerName: data.workerName,
+            items: data.items
+        });
+
+        return order;
     }
 
     async getOrders() {
@@ -89,6 +104,18 @@ export class OrdersService {
     }
 
     async closeTable(tableNumber: number) {
+        // Get current orders and items for the pre-bill
+        const tableData = await this.getOrdersByTable(tableNumber);
+
+        // Print pre-bill if there are orders
+        if (tableData.orders.length > 0) {
+            this.printerService.printPreBill(tableNumber, {
+                orders: tableData.orders,
+                aggregatedItems: tableData.aggregatedItems,
+                totalPrice: tableData.totalPrice
+            });
+        }
+
         return this.prisma.order.updateMany({
             where: {
                 tableNumber: tableNumber,

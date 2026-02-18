@@ -83,9 +83,11 @@ export class QueueController {
     }
 
     @Post('table/:id/reset')
-    async resetTable(@Param('id') id: string) {
+    @UseGuards(JwtAuthGuard)
+    async resetTable(@Param('id') id: string, @Request() req) {
         const tableNumber = parseInt(id);
-        await this.queueService.resetTable(tableNumber);
+        const closedBy = req.user.username; // Get username from JWT
+        await this.queueService.resetTable(tableNumber, closedBy);
         await this.ordersService.closeTable(tableNumber);
         this.eventsGateway.emitResetTable(tableNumber);
         return { success: true };
@@ -94,6 +96,11 @@ export class QueueController {
     @Get('stats')
     async getStats() {
         return this.queueService.getStats();
+    }
+
+    @Get('stats/tables')
+    async getTableLogs() {
+        return this.queueService.getTableLogs();
     }
 
     @Get()
@@ -132,6 +139,8 @@ export class QueueController {
 
     @Post('table/join')
     async joinTable(@Body() body: { tableNumber: number; userName: string }) {
+        // Since this is public, we don't have a logged-in user.
+        // The service defaults openedBy to 'Customer'.
         const session = await this.queueService.joinTable(body.tableNumber, body.userName);
         this.eventsGateway.emitTablesUpdate(); // Notify admins
         return session;

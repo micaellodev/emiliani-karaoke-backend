@@ -67,15 +67,19 @@ let QueueController = class QueueController {
         this.eventsGateway.emitResumeSong();
         return { success: true };
     }
-    async resetTable(id) {
+    async resetTable(id, req) {
         const tableNumber = parseInt(id);
-        await this.queueService.resetTable(tableNumber);
+        const closedBy = req.user.username;
+        await this.queueService.resetTable(tableNumber, closedBy);
         await this.ordersService.closeTable(tableNumber);
         this.eventsGateway.emitResetTable(tableNumber);
         return { success: true };
     }
     async getStats() {
         return this.queueService.getStats();
+    }
+    async getTableLogs() {
+        return this.queueService.getTableLogs();
     }
     async getQueue() {
         return this.queueService.getQueue();
@@ -173,9 +177,11 @@ __decorate([
 ], QueueController.prototype, "resumePlayback", null);
 __decorate([
     (0, common_1.Post)('table/:id/reset'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", Promise)
 ], QueueController.prototype, "resetTable", null);
 __decorate([
@@ -184,6 +190,12 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], QueueController.prototype, "getStats", null);
+__decorate([
+    (0, common_1.Get)('stats/tables'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], QueueController.prototype, "getTableLogs", null);
 __decorate([
     (0, common_1.Get)(),
     __metadata("design:type", Function),

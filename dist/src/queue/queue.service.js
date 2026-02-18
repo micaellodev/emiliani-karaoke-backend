@@ -189,6 +189,13 @@ let QueueService = class QueueService {
                 userName,
             },
         });
+        await this.prisma.tableLog.create({
+            data: {
+                tableNumber,
+                customerName: userName,
+                openedBy: 'Customer',
+            },
+        });
         console.log(`[DEBUG] Session created:`, session);
         this.eventsGateway.emitTablesUpdate();
         return session;
@@ -201,7 +208,30 @@ let QueueService = class QueueService {
     async getActiveTables() {
         return this.prisma.tableSession.findMany();
     }
-    async resetTable(tableNumber) {
+    async resetTable(tableNumber, closedByUsername) {
+        try {
+            const activeLog = await this.prisma.tableLog.findFirst({
+                where: {
+                    tableNumber,
+                    closedAt: null,
+                },
+                orderBy: {
+                    openedAt: 'desc',
+                },
+            });
+            if (activeLog) {
+                await this.prisma.tableLog.update({
+                    where: { id: activeLog.id },
+                    data: {
+                        closedAt: new Date(),
+                        closedBy: closedByUsername || 'System',
+                    },
+                });
+            }
+        }
+        catch (e) {
+            console.error('Error logging table close:', e);
+        }
         try {
             await this.prisma.tableSession.delete({
                 where: { tableNumber },
@@ -211,6 +241,14 @@ let QueueService = class QueueService {
         }
         this.eventsGateway.emitTablesUpdate();
         return { success: true };
+    }
+    async getTableLogs() {
+        return this.prisma.tableLog.findMany({
+            orderBy: {
+                openedAt: 'desc',
+            },
+            take: 50,
+        });
     }
 };
 exports.QueueService = QueueService;

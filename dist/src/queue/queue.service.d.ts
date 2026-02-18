@@ -187,7 +187,17 @@ export declare class QueueService {
         tableNumber: number;
         userName: string;
     }[]>;
-    resetTable(tableNumber: number): Promise<{
+    resetTable(tableNumber: number, closedByUsername?: string): Promise<{
         success: boolean;
     }>;
+    getTableLogs(): Promise<{
+        id: number;
+        tableNumber: number;
+        customerName: string;
+        openedAt: Date;
+        closedAt: Date | null;
+        openedBy: string;
+        closedBy: string | null;
+        totalTotal: number | null;
+    }[]>;
 }

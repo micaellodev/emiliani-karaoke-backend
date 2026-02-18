@@ -13,9 +13,11 @@ exports.OrdersService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../prisma.service");
 const pricing_utils_1 = require("./pricing.utils");
+const printer_service_1 = require("../printer/printer.service");
 let OrdersService = class OrdersService {
-    constructor(prisma) {
+    constructor(prisma, printerService) {
         this.prisma = prisma;
+        this.printerService = printerService;
     }
     async getSalesLog(filter) {
         const where = {
@@ -69,15 +71,23 @@ let OrdersService = class OrdersService {
     }
     async createOrder(data) {
         const totalPrice = (0, pricing_utils_1.calculateOrderPrice)(data.items);
-        return this.prisma.order.create({
+        const order = await this.prisma.order.create({
             data: {
                 tableNumber: data.tableNumber,
                 userName: data.userName,
+                workerName: data.workerName,
                 items: data.items,
                 totalPrice: totalPrice,
                 status: 'PENDING',
             },
         });
+        this.printerService.printOrder({
+            tableNumber: data.tableNumber,
+            userName: data.userName,
+            workerName: data.workerName,
+            items: data.items
+        });
+        return order;
     }
     async getOrders() {
         return this.prisma.order.findMany({
@@ -86,6 +96,14 @@ let OrdersService = class OrdersService {
         });
     }
     async closeTable(tableNumber) {
+        const tableData = await this.getOrdersByTable(tableNumber);
+        if (tableData.orders.length > 0) {
+            this.printerService.printPreBill(tableNumber, {
+                orders: tableData.orders,
+                aggregatedItems: tableData.aggregatedItems,
+                totalPrice: tableData.totalPrice
+            });
+        }
         return this.prisma.order.updateMany({
             where: {
                 tableNumber: tableNumber,
@@ -156,6 +174,7 @@ let OrdersService = class OrdersService {
 exports.OrdersService = OrdersService;
 exports.OrdersService = OrdersService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
+        printer_service_1.PrinterService])
 ], OrdersService);
 //# sourceMappingURL=orders.service.js.map

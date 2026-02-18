@@ -17,7 +17,7 @@ export class OrdersGateway {
 
     @SubscribeMessage('order:create')
     async handleCreateOrder(
-        @MessageBody() data: { tableNumber: number; userName?: string; items: any[] },
+        @MessageBody() data: { tableNumber: number; userName?: string; workerName?: string; items: any[] },
         @ConnectedSocket() client: Socket,
     ) {
         const order = await this.ordersService.createOrder(data);

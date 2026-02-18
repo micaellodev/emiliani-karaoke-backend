@@ -241,6 +241,16 @@ export class QueueService {
                 userName,
             },
         });
+
+        // Log table opening
+        await this.prisma.tableLog.create({
+            data: {
+                tableNumber,
+                customerName: userName,
+                openedBy: 'Customer', // Default to Customer for now
+            },
+        });
+
         console.log(`[DEBUG] Session created:`, session);
 
         this.eventsGateway.emitTablesUpdate();
@@ -257,7 +267,34 @@ export class QueueService {
         return this.prisma.tableSession.findMany();
     }
 
-    async resetTable(tableNumber: number) {
+    async resetTable(tableNumber: number, closedByUsername?: string) {
+        // Log table closing
+        try {
+            // Find active log (where closedAt is null) for this table
+            // We order by openedAt desc to get the latest one
+            const activeLog = await this.prisma.tableLog.findFirst({
+                where: {
+                    tableNumber,
+                    closedAt: null,
+                },
+                orderBy: {
+                    openedAt: 'desc',
+                },
+            });
+
+            if (activeLog) {
+                await this.prisma.tableLog.update({
+                    where: { id: activeLog.id },
+                    data: {
+                        closedAt: new Date(),
+                        closedBy: closedByUsername || 'System',
+                    },
+                });
+            }
+        } catch (e) {
+            console.error('Error logging table close:', e);
+        }
+
         // Delete session
         try {
             await this.prisma.tableSession.delete({
@@ -266,7 +303,17 @@ export class QueueService {
         } catch (e) {
             // Ignore if already deleted
         }
+
         this.eventsGateway.emitTablesUpdate();
         return { success: true };
+    }
+
+    async getTableLogs() {
+        return this.prisma.tableLog.findMany({
+            orderBy: {
+                openedAt: 'desc',
+            },
+            take: 50, // Limit to last 50 entries
+        });
     }
 }

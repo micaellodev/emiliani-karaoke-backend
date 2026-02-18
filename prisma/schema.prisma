@@ -60,6 +60,19 @@ model TableSession {
   @@map("table_sessions")
 }
 
+model TableLog {
+  id          Int      @id @default(autoincrement())
+  tableNumber Int      @map("table_number")
+  customerName String  @map("customer_name")
+  openedAt    DateTime @default(now()) @map("opened_at")
+  closedAt    DateTime? @map("closed_at")
+  openedBy    String   @default("System") @map("opened_by") 
+  closedBy    String?  @map("closed_by")
+  totalTotal  Float?   @map("total_total")
+  
+  @@map("table_logs")
+}
+
 model Settings {
   id            String   @id @default(cuid())
   venueName     String   @default("Karaoke Venue") @map("venue_name")
@@ -74,6 +87,7 @@ model Order {
   id          String   @id @default(cuid())
   tableNumber Int      @map("table_number")
   userName    String?  @map("user_name") // Name of the customer who placed the order
+  workerName  String?  @map("worker_name") // Name of the worker who took the order (optional)
   items       Json     // Array of { name: string, quantity: number }
   totalPrice  Float    @default(0) @map("total_price") // Total price in soles
   status      String   @default("PENDING") // PENDING, COMPLETED
