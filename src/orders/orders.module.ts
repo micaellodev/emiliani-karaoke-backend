@@ -3,12 +3,11 @@ import { OrdersService } from './orders.service';
 import { OrdersGateway } from './orders.gateway';
 import { OrdersController } from './orders.controller';
 import { PrismaService } from '../prisma.service';
-import { PrinterModule } from '../printer/printer.module';
+import { PrinterService } from '../services/printer.service';
 
 @Module({
-    imports: [PrinterModule],
     controllers: [OrdersController],
-    providers: [OrdersService, OrdersGateway, PrismaService],
+    providers: [OrdersService, OrdersGateway, PrismaService, PrinterService],
     exports: [OrdersService],
 })
 export class OrdersModule { }

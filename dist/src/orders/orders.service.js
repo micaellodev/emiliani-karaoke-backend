@@ -13,7 +13,7 @@ exports.OrdersService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../prisma.service");
 const pricing_utils_1 = require("./pricing.utils");
-const printer_service_1 = require("../printer/printer.service");
+const printer_service_1 = require("../services/printer.service");
 let OrdersService = class OrdersService {
     constructor(prisma, printerService) {
         this.prisma = prisma;
@@ -75,18 +75,12 @@ let OrdersService = class OrdersService {
             data: {
                 tableNumber: data.tableNumber,
                 userName: data.userName,
-                workerName: data.workerName,
                 items: data.items,
                 totalPrice: totalPrice,
                 status: 'PENDING',
             },
         });
-        this.printerService.printOrder({
-            tableNumber: data.tableNumber,
-            userName: data.userName,
-            workerName: data.workerName,
-            items: data.items
-        });
+        this.printerService.printOrder(order, data.items);
         return order;
     }
     async getOrders() {
@@ -96,14 +90,6 @@ let OrdersService = class OrdersService {
         });
     }
     async closeTable(tableNumber) {
-        const tableData = await this.getOrdersByTable(tableNumber);
-        if (tableData.orders.length > 0) {
-            this.printerService.printPreBill(tableNumber, {
-                orders: tableData.orders,
-                aggregatedItems: tableData.aggregatedItems,
-                totalPrice: tableData.totalPrice
-            });
-        }
         return this.prisma.order.updateMany({
             where: {
                 tableNumber: tableNumber,

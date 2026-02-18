@@ -1,5 +1,5 @@
 import { PrismaService } from '../prisma.service';
-import { PrinterService } from '../printer/printer.service';
+import { PrinterService } from '../services/printer.service';
 export declare class OrdersService {
     private prisma;
     private printerService;
@@ -11,13 +11,12 @@ export declare class OrdersService {
         sellerName?: string;
     }): Promise<{
         id: string;
-        createdAt: Date;
-        status: string;
         tableNumber: number;
         userName: string | null;
-        workerName: string | null;
         items: import("@prisma/client/runtime/library").JsonValue;
         totalPrice: number;
+        status: string;
+        createdAt: Date;
     }[]>;
     getTopBeverages(startDate?: Date, endDate?: Date): Promise<{
         name: string;
@@ -26,70 +25,63 @@ export declare class OrdersService {
     createOrder(data: {
         tableNumber: number;
         userName?: string;
-        workerName?: string;
         items: any[];
     }): Promise<{
         id: string;
-        createdAt: Date;
-        status: string;
         tableNumber: number;
         userName: string | null;
-        workerName: string | null;
         items: import("@prisma/client/runtime/library").JsonValue;
         totalPrice: number;
+        status: string;
+        createdAt: Date;
     }>;
     getOrders(): Promise<{
         id: string;
-        createdAt: Date;
-        status: string;
         tableNumber: number;
         userName: string | null;
-        workerName: string | null;
         items: import("@prisma/client/runtime/library").JsonValue;
         totalPrice: number;
+        status: string;
+        createdAt: Date;
     }[]>;
     closeTable(tableNumber: number): Promise<import(".prisma/client").Prisma.BatchPayload>;
     getCompletedOrders(): Promise<{
         id: string;
-        createdAt: Date;
-        status: string;
         tableNumber: number;
         userName: string | null;
-        workerName: string | null;
         items: import("@prisma/client/runtime/library").JsonValue;
         totalPrice: number;
+        status: string;
+        createdAt: Date;
     }[]>;
     completeOrder(id: string): Promise<{
         id: string;
-        createdAt: Date;
-        status: string;
         tableNumber: number;
         userName: string | null;
-        workerName: string | null;
         items: import("@prisma/client/runtime/library").JsonValue;
         totalPrice: number;
+        status: string;
+        createdAt: Date;
     }>;
     deleteOrder(id: string): Promise<{
         id: string;
-        createdAt: Date;
-        status: string;
         tableNumber: number;
         userName: string | null;
-        workerName: string | null;
         items: import("@prisma/client/runtime/library").JsonValue;
         totalPrice: number;
+        status: string;
+        createdAt: Date;
     }>;
     getOrdersByTable(tableNumber: number): Promise<{
         tableNumber: number;
         orders: {
             id: string;
-            createdAt: Date;
-            status: string;
             tableNumber: number;
             userName: string | null;
-            workerName: string | null;
             items: import("@prisma/client/runtime/library").JsonValue;
             totalPrice: number;
+            status: string;
+            createdAt: Date;
         }[];
         aggregatedItems: {
             name: string;
