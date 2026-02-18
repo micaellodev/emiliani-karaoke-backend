@@ -13,9 +13,11 @@ exports.OrdersService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../prisma.service");
 const pricing_utils_1 = require("./pricing.utils");
+const printer_service_1 = require("../services/printer.service");
 let OrdersService = class OrdersService {
-    constructor(prisma) {
+    constructor(prisma, printerService) {
         this.prisma = prisma;
+        this.printerService = printerService;
     }
     async getSalesLog(filter) {
         const where = {
@@ -69,7 +71,7 @@ let OrdersService = class OrdersService {
     }
     async createOrder(data) {
         const totalPrice = (0, pricing_utils_1.calculateOrderPrice)(data.items);
-        return this.prisma.order.create({
+        const order = await this.prisma.order.create({
             data: {
                 tableNumber: data.tableNumber,
                 userName: data.userName,
@@ -78,6 +80,8 @@ let OrdersService = class OrdersService {
                 status: 'PENDING',
             },
         });
+        this.printerService.printOrder(order, data.items);
+        return order;
     }
     async getOrders() {
         return this.prisma.order.findMany({
@@ -156,6 +160,7 @@ let OrdersService = class OrdersService {
 exports.OrdersService = OrdersService;
 exports.OrdersService = OrdersService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
+        printer_service_1.PrinterService])
 ], OrdersService);
 //# sourceMappingURL=orders.service.js.map

@@ -1,7 +1,9 @@
 import { PrismaService } from '../prisma.service';
+import { PrinterService } from '../services/printer.service';
 export declare class OrdersService {
     private prisma;
-    constructor(prisma: PrismaService);
+    private printerService;
+    constructor(prisma: PrismaService, printerService: PrinterService);
     getSalesLog(filter: {
         startDate?: Date;
         endDate?: Date;
