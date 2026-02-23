@@ -12,20 +12,25 @@ export class OrdersService {
 
     async getSalesLog(filter: { startDate?: Date; endDate?: Date; tableNumber?: number; sellerName?: string }) {
         const where: any = {
-            status: 'COMPLETED', // Only completed orders count as sales
+            status: { in: ['COMPLETED', 'CLOSED'] }, // Completed and closed orders count as sales
         };
 
         if (filter.startDate) {
             where.createdAt = { ...where.createdAt, gte: filter.startDate };
         }
         if (filter.endDate) {
-            where.createdAt = { ...where.createdAt, lte: filter.endDate };
+            const endOfDay = new Date(filter.endDate);
+            endOfDay.setUTCHours(23, 59, 59, 999);
+            where.createdAt = { ...where.createdAt, lte: endOfDay };
         }
         if (filter.tableNumber) {
             where.tableNumber = filter.tableNumber;
         }
         if (filter.sellerName) {
-            where.userName = { contains: filter.sellerName, mode: 'insensitive' };
+            where.OR = [
+                { userName: { contains: filter.sellerName, mode: 'insensitive' } },
+                { workerName: { contains: filter.sellerName, mode: 'insensitive' } }
+            ];
         }
 
         return this.prisma.order.findMany({
@@ -36,14 +41,16 @@ export class OrdersService {
 
     async getTopBeverages(startDate?: Date, endDate?: Date) {
         const where: any = {
-            status: 'COMPLETED',
+            status: { in: ['COMPLETED', 'CLOSED'] },
         };
 
         if (startDate) {
             where.createdAt = { ...where.createdAt, gte: startDate };
         }
         if (endDate) {
-            where.createdAt = { ...where.createdAt, lte: endDate };
+            const endOfDay = new Date(endDate);
+            endOfDay.setUTCHours(23, 59, 59, 999);
+            where.createdAt = { ...where.createdAt, lte: endOfDay };
         }
 
         const orders = await this.prisma.order.findMany({
