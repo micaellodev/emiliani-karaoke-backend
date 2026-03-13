@@ -4,12 +4,15 @@ import { OrdersService } from '../orders/orders.service';
 import { EventsGateway } from '../gateway/events.gateway';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
+import { YouTubeService } from '../youtube/youtube.service';
+
 @Controller('queue')
 export class QueueController {
     constructor(
         private queueService: QueueService,
         private eventsGateway: EventsGateway,
         private ordersService: OrdersService,
+        private youtubeService: YouTubeService,
     ) { }
 
     @Post('request')
@@ -168,5 +171,22 @@ export class QueueController {
         const enabled = this.queueService.setTimerEnabled(body.enabled);
         this.eventsGateway.emitTimerUpdate(enabled);
         return { enabled };
+    }
+
+    @Get('autoplay')
+    async getAutoplayEnabled() {
+        return { enabled: this.queueService.getAutoplayEnabled() };
+    }
+
+    @Post('autoplay')
+    async setAutoplayEnabled(@Body() body: { enabled: boolean }) {
+        const enabled = this.queueService.setAutoplayEnabled(body.enabled);
+        this.eventsGateway.emitQueueUpdated(); // To notify UI to update switch state
+        return { enabled };
+    }
+
+    @Get('autoplay-next/:id')
+    async getAutoplayNext(@Param('id') id: string) {
+        return this.youtubeService.getAutoplayNext(id);
     }
 }

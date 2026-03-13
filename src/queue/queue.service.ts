@@ -7,6 +7,7 @@ import { EventsGateway } from '../gateway/events.gateway';
 @Injectable()
 export class QueueService {
     private timerEnabled = true;
+    private autoplayEnabled = false;
 
     constructor(
         private prisma: PrismaService,
@@ -20,6 +21,15 @@ export class QueueService {
     setTimerEnabled(enabled: boolean) {
         this.timerEnabled = enabled;
         return this.timerEnabled;
+    }
+
+    getAutoplayEnabled() {
+        return this.autoplayEnabled;
+    }
+
+    setAutoplayEnabled(enabled: boolean) {
+        this.autoplayEnabled = enabled;
+        return this.autoplayEnabled;
     }
 
     async requestSong(data: {
