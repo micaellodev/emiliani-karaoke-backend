@@ -5,9 +5,10 @@ import { PrismaService } from '../prisma.service';
 import { EventsGateway } from '../gateway/events.gateway';
 
 import { OrdersModule } from '../orders/orders.module';
+import { YouTubeModule } from '../youtube/youtube.module';
 
 @Module({
-    imports: [OrdersModule],
+    imports: [OrdersModule, YouTubeModule],
     controllers: [QueueController],
     providers: [QueueService, PrismaService, EventsGateway],
     exports: [QueueService],
