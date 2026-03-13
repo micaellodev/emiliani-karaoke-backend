@@ -152,9 +152,12 @@ export class QueueService {
     }
 
     async playSong(id: string) {
-        // Mark any currently playing song as finished
+        // Mark any OTHER currently playing song as finished
         await this.prisma.queueItem.updateMany({
-            where: { status: 'PLAYING' },
+            where: {
+                status: 'PLAYING',
+                id: { not: id }
+            },
             data: { status: 'FINISHED', playedAt: new Date() },
         });
 
@@ -166,9 +169,9 @@ export class QueueService {
     }
 
     async completeSong(id: string) {
-        // Mark current song as finished
-        await this.prisma.queueItem.update({
-            where: { id },
+        // Mark current song as finished (only if it was actually playing to avoid accidental double-completes)
+        await this.prisma.queueItem.updateMany({
+            where: { id, status: 'PLAYING' },
             data: {
                 status: 'FINISHED',
                 playedAt: new Date(),

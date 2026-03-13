@@ -67,6 +67,11 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
         this.server.emit('reset_table', { tableNumber });
     }
 
+    @SubscribeMessage('playback_progress')
+    handlePlaybackProgress(client: Socket, data: any) {
+        this.server.emit('playback_progress', data);
+    }
+
     emitTablesUpdate() {
         this.server.emit('tables_updated');
     }
