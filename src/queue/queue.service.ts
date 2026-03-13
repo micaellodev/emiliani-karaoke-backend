@@ -41,11 +41,20 @@ export class QueueService {
         requestedBy?: string;
         comments?: string;
     }) {
+        // Get max order in PENDING
+        const maxOrder = await this.prisma.queueItem.findFirst({
+            where: { status: 'PENDING' },
+            orderBy: { order: 'desc' },
+            select: { order: true },
+        });
+
+        const nextOrder = (maxOrder?.order ?? 0) + 1;
+
         return this.prisma.queueItem.create({
             data: {
                 ...data,
                 status: 'PENDING',
-                order: 0,
+                order: nextOrder,
             },
         });
     }
@@ -113,16 +122,29 @@ export class QueueService {
     }
 
     async getQueue() {
-        const queue = await this.prisma.queueItem.findMany({
+        // We want: PLAYING (at the very top) -> APPROVED (in order) -> PENDING (in order)
+        const products = await this.prisma.queueItem.findMany({
             where: {
                 status: {
                     in: ['PENDING', 'APPROVED', 'PLAYING'],
                 },
             },
-            orderBy: [
-                { status: 'asc' }, // PENDING first, then APPROVED
-                { order: 'asc' },
-            ],
+        });
+
+        // Custom sort to ensure PLAYING is always first, then APPROVED, then PENDING
+        const statusPriority = {
+            'PLAYING': 0,
+            'APPROVED': 1,
+            'PENDING': 2,
+            'FINISHED': 3,
+            'REJECTED': 4
+        };
+
+        const queue = products.sort((a, b) => {
+            if (statusPriority[a.status] !== statusPriority[b.status]) {
+                return statusPriority[a.status] - statusPriority[b.status];
+            }
+            return a.order - b.order;
         });
 
         return queue.map((item) => ({
