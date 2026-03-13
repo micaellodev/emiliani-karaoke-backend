@@ -85,14 +85,12 @@ export class YouTubeService {
     }
 
     async getAutoplayNext(videoId: string) {
-        try {
-            // Plan A: Use google search or similar if possible, but for simplicity let's use a fixed "Related" search
-            // Invidious often has a "related" endpoint, but youtube-sr might not directly.
-            // Let's search for the video title + "karaoke related" or similar if we can't get direct relations.
+        // First try to find real related videos via multiple nodes
+        for (const node of this.INVIDIOUS_NODES) {
+            try {
+                const res = await fetch(`${node}/api/v1/videos/${videoId}`);
+                if (!res.ok) continue;
 
-            // Actually, let's try to search by the videoId itself or just use common search as fallback
-            const res = await fetch(`https://vid.puffyan.us/api/v1/videos/${videoId}`);
-            if (res.ok) {
                 const data = await res.json();
                 if (data.relatedVideos && data.relatedVideos.length > 0) {
                     const filtered = data.relatedVideos.filter((v: any) =>
@@ -105,18 +103,26 @@ export class YouTubeService {
                     const mins = Math.floor(next.lengthSeconds / 60);
                     const secs = (next.lengthSeconds % 60).toString().padStart(2, '0');
 
+                    console.log(`[Autoplay] Found related via ${node}: ${next.title}`);
                     return {
                         id: next.videoId,
                         title: next.title,
-                        channelTitle: next.author,
+                        channelTitle: next.author || 'YouTube',
                         duration: `${mins}:${secs}`,
                         thumbnail: next.videoThumbnails && next.videoThumbnails.length > 0 ? next.videoThumbnails[0].url : `https://img.youtube.com/vi/${next.videoId}/mqdefault.jpg`,
                     };
                 }
+            } catch (error) {
+                continue;
             }
-        } catch (error) {
-            console.error('Error fetching related video:', error);
         }
-        return null; // Fallback to null if nothing found
+
+        // --- Fallback: Search by title if we have access to it ---
+        // Since we only have videoId here, we can't search by title unless we fetched it.
+        // Let's at least try one last node with a search for the current video id to see if that helps 
+        // (sometimes videos show up in search for their own id) or just admit failure.
+
+        console.warn(`[Autoplay] Failed to find related videos for ${videoId} after trying all nodes.`);
+        return null;
     }
 }
