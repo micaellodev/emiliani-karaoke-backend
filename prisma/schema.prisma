@@ -95,3 +95,36 @@ model Order {
 
   @@map("orders")
 }
+
+// ─────────────────────────────────────────────
+//  INVENTORY MODULE
+// ─────────────────────────────────────────────
+
+model InventoryProduct {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  dailyEntries DailyInventoryEntry[]
+
+  @@map("inventory_products")
+}
+
+model DailyInventoryEntry {
+  id          String   @id @default(cuid())
+  date        DateTime @db.Date // Date of the inventory day
+  milliliters Float    @default(0) // Amount in ml
+  quantity    Int      @default(0) // Number of units
+  submittedBy String?  @map("submitted_by") // Username of worker who submitted
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  productId   String
+  product     InventoryProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, date])
+  @@index([date])
+  @@map("daily_inventory_entries")
+}
+

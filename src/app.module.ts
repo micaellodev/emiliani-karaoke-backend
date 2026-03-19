@@ -8,6 +8,7 @@ import { PrismaService } from './prisma.service';
 import { UsersModule } from './users/users.module';
 import { OrdersModule } from './orders/orders.module';
 import { SchedulerService } from './scheduler/scheduler.service';
+import { InventoryModule } from './inventory/inventory.module';
 
 @Module({
     imports: [
@@ -16,8 +17,10 @@ import { SchedulerService } from './scheduler/scheduler.service';
         QueueModule,
         YouTubeModule,
         UsersModule,
-        OrdersModule
+        OrdersModule,
+        InventoryModule,
     ],
     providers: [EventsGateway, PrismaService, SchedulerService],
 })
 export class AppModule { }
+
